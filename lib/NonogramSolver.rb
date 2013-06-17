@@ -233,7 +233,6 @@ class NonogramSolver
     if (imageDecoded image) || depth > 5
       return image
     else
-      printImage image
       return decodeImage encodedImage, image, depth + 1
     end
 
