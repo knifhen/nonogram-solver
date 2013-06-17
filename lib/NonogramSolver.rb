@@ -67,9 +67,37 @@ class NonogramSolver
     fields = initMaxIndex row, fields, encodedRow
     row = updateRowWithOverlappingFields row, fields
     row = updateRowWithNotOverlappingFields row, fields
+    row = updateRowWithAllFieldsComplete row, fields
     row = updateRowWithFieldsInEmpties row, fields
 
     return row
+  end
+
+  def updateRowWithAllFieldsComplete row, fields
+    row.each_with_index { |value, i|
+      if value == 1
+        matchingFields = []
+        fields.each { |field|
+          if field.minStart <= i && field.maxEnd >= i
+            matchingFields << field
+          end
+        }
+
+        if matchingFields.length == 1
+          field = matchingFields[0]
+          if field.minEnd < i
+            field.minEnd = i
+            field.updateMinStart
+          end
+          if field.maxStart > i
+            field.maxStart = i
+            field.updateMaxEnd
+          end
+        end
+      end
+    }
+
+    return updateRowWithNotOverlappingFields row, fields
   end
 
   def updateRowWithFieldsInEmpties row, fields

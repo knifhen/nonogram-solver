@@ -1,6 +1,6 @@
 require 'NonogramSolver'
 
-describe NonogramSolver, "Decode nonogram image" do
+describe NonogramSolver do
   it "Solves row A" do
     correctRow = [1,1,1,1]
     encodedRow = [4]
@@ -29,7 +29,6 @@ describe NonogramSolver, "Decode nonogram image" do
   end
 
   it "Solves row with all overlapping fields set" do
-    pending
     correctRow = [1,0,0,1]
     encodedRow = [1,1]
     row = [1,-1,-1,1]
@@ -39,7 +38,6 @@ describe NonogramSolver, "Decode nonogram image" do
   end
 
   it "Solves the cross image" do
-    pending
     correctImage = [[0,1,1,0], [1,1,1,1], [1,1,1,1], [0,1,1,0]]
     encodedImage = [[[2],[4],[4],[2]], [[2],[4],[4],[2]]]
     ns = NonogramSolver.new

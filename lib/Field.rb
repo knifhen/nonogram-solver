@@ -5,12 +5,20 @@ class Field
     return maxStart <= minEnd
   end
 
+  def updateMinStart
+    @minStart = minEnd - length + 1
+  end
+
   def updateMinEnd
-      @minEnd = minStart + length - 1
+    @minEnd = minStart + length - 1
   end
 
   def updateMaxStart
-      @maxStart = maxEnd - length + 1
+    @maxStart = maxEnd - length + 1
+  end
+
+  def updateMaxEnd
+    @maxEnd = maxStart + length - 1
   end
 
 end
