@@ -21,4 +21,8 @@ class Field
     @maxEnd = maxStart + length - 1
   end
 
+  def updateLength
+    @length = @end - start + 1
+  end
+
 end

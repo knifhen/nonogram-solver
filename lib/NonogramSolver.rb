@@ -4,8 +4,9 @@ class NonogramSolver
   def main
     clearScreen
 
-    encodedImage = [[[2],[4],[4],[2]], [[2],[4],[4],[2]]]
+    #encodedImage = [[[2],[4],[4],[2]], [[2],[4],[4],[2]]]
     #encodedImage = [[[1,1],[0],[0],[1,1]], [[1,1],[0],[0],[1,1]]]
+    encodedImage = [[[3],[2],[4],[1],[1,2]], [[1,1],[3],[3],[1,1,1],[2]]]
 
     image = solve encodedImage
 
@@ -15,7 +16,7 @@ class NonogramSolver
 
   def solve encodedImage
     image = initImage encodedImage
-    image = decodeImage encodedImage, image
+    image = decodeImage encodedImage, image, 0
     return image
   end
 
@@ -24,12 +25,18 @@ class NonogramSolver
   end
 
   def printImage image
+    puts ""
     image.each { |row|
       row.each { |pixel|
-        print pixel
+        if pixel == -1
+          print 'x'
+        else
+          print pixel
+        end
       }
       puts ""
     }
+    puts ""
   end
 
   def initImage encodedImage
@@ -65,6 +72,7 @@ class NonogramSolver
   def decodeRow row, encodedRow
     fields = initMinIndex encodedRow
     fields = initMaxIndex row, fields, encodedRow
+
     row = updateRowWithOverlappingFields row, fields
     row = updateRowWithNotOverlappingFields row, fields
     row = updateRowWithAllFieldsComplete row, fields
@@ -96,7 +104,6 @@ class NonogramSolver
         end
       end
     }
-
     return updateRowWithNotOverlappingFields row, fields
   end
 
@@ -104,13 +111,14 @@ class NonogramSolver
     empties = []
     empty = nil
     row.each_with_index { |value, i|
-      if value == -1
+      if value != 0
         if empty == nil
           empty = Field.new
           empties << empty
           empty.start = i
         end
         empty.end = i
+        empty.updateLength
       else
         empty = nil
       end
@@ -119,7 +127,7 @@ class NonogramSolver
     fields.each { |field|
       emptiesMatching = []
       empties.each { |empty|
-        if empty.start >= field.minStart && empty.start <= field.maxEnd
+        if empty.start >= field.minStart && empty.start <= field.maxEnd && empty.length >= field.length
           emptiesMatching << empty
         end
       }
@@ -127,16 +135,17 @@ class NonogramSolver
       if emptiesMatching.length > 0
         firstEmpty = emptiesMatching[0]
         lastEmpty = emptiesMatching[emptiesMatching.length - 1]
-        if firstEmpty.start > field.minStart
+        if firstEmpty.start >= field.minStart && firstEmpty.start <= field.maxStart
           field.minStart = firstEmpty.start
           field.updateMinEnd
         end
-        if lastEmpty.end < field.maxEnd
+        if lastEmpty.end <= field.maxEnd && lastEmpty.end >= field.minEnd
           field.maxEnd = lastEmpty.end
           field.updateMaxStart
         end
       end
     }
+
     return updateRowWithOverlappingFields row, fields
   end
 
@@ -197,19 +206,36 @@ class NonogramSolver
     return row
   end
 
-  def decodeImage encodedImage, image
+  def imageDecoded image
+    image.each { |row|
+      row.each { |value|
+        if value == -1
+          return false
+        end
+      }
+    }
+    return true
+  end
+
+  def decodeImage encodedImage, image, depth
     horizontal = encodedImage[0]
     vertical = encodedImage[1]
 
-    vertical.each_with_index { |x, i|
+    horizontal.each_with_index { |x, i|
       column = decodeRow getColumn(image, i), x
       image = insertColumn image, column, i
     }
 
-    horizontal.each_with_index { |y, i|
+    vertical.each_with_index { |y, i|
       image[i] = decodeRow image[i], y
     }
 
-    return image
+    if (imageDecoded image) || depth > 5
+      return image
+    else
+      printImage image
+      return decodeImage encodedImage, image, depth + 1
+    end
+
   end
 end
