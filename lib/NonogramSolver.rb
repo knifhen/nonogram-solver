@@ -39,7 +39,7 @@ class NonogramSolver
     height.times {
       row = []
       width.times {
-        row << 0
+        row << -1
       }
       image << row
     }
@@ -61,64 +61,111 @@ class NonogramSolver
     return image
   end
 
-  def solveVerticalPixel column, x
-    return column
-  end
 
-  def solveHorizontalPixel row, y
-    min = []
-    max = []
-
-    nFields = y.length
-    totalLength = [nFields - 1, 0].max
-    encodedPixels = 0
-    y.each_with_index { |field, i|
-      encodedPixels += field
-      min << 0
-      max << row.length
-    }
-    totalLength += encodedPixels
-
-    decodedPixels = 0
-    row.each { |pixel|
-      decodedPixels += pixel
-    }
-
-    if encodedPixels == decodedPixels
-      return row
-    end
-    missingPixels = encodedPixels - decodedPixels
+  def decodeRow row, encodedRow
+    fields = initMinIndex encodedRow
+    fields = initMaxIndex row, fields, encodedRow
+    row = updateRowWithOverlappingFields row, fields
+    row = updateRowWithNotOverlappingFields row, fields
+    row = updateRowWithFieldsInEmpties row, fields
 
     return row
   end
 
-  def decodeRow row, encodedRow
+  def updateRowWithFieldsInEmpties row, fields
+    empties = []
+    empty = nil
+    row.each_with_index { |value, i|
+      if value == -1
+        if empty == nil
+          empty = Field.new
+          empties << empty
+          empty.start = i
+        end
+        empty.end = i
+      else
+        empty = nil
+      end
+    }
+
+    fields.each { |field|
+      emptiesMatching = []
+      empties.each { |empty|
+        if empty.start >= field.minStart && empty.start <= field.maxEnd
+          emptiesMatching << empty
+        end
+      }
+
+      if emptiesMatching.length > 0
+        firstEmpty = emptiesMatching[0]
+        lastEmpty = emptiesMatching[emptiesMatching.length - 1]
+        if firstEmpty.start > field.minStart
+          field.minStart = firstEmpty.start
+          field.updateMinEnd
+        end
+        if lastEmpty.end < field.maxEnd
+          field.maxEnd = lastEmpty.end
+          field.updateMaxStart
+        end
+      end
+    }
+    return updateRowWithOverlappingFields row, fields
+  end
+
+  def updateRowWithNotOverlappingFields row, fields
+    mask = []
+    row.each {
+      mask << 0
+    }
+
+    fields.each { |field|
+      (field.minStart..field.maxEnd).each { |i|
+        mask[i] = 1
+      }
+    }
+
+    mask.each_with_index { |value, i|
+      if value == 0
+        row[i] = 0
+      end
+    }
+
+    return row
+  end
+
+  def initMinIndex encodedRow
     fields = []
     minStart = 0
     encodedRow.each { |fieldLength|
       field = Field.new
+      field.length = fieldLength
       field.minStart = minStart
-      field.minEnd = minStart + fieldLength - 1
+      field.updateMinEnd
       minStart = field.minEnd + 2
       fields << field
     }
+    return fields
+  end
 
+  def initMaxIndex row, fields, encodedRow
     maxEnd = row.length - 1
     encodedRow.reverse.each_with_index { |fieldLength, i|
       field = fields.reverse[i]
       field.maxEnd = maxEnd
-      field.maxStart = maxEnd - fieldLength + 1
+      field.updateMaxStart
       maxEnd = field.maxStart - 2
     }
+    return fields
+  end
 
+  def updateRowWithOverlappingFields row, fields
     fields.each { |field|
-      if field.maxStart <= field.minEnd
+      if field.maxStartOverlapMinEnd
         (field.maxStart..field.minEnd).each { |i|
           row[i] = 1
         }
       end
     }
-
     return row
   end
 
@@ -127,13 +174,11 @@ class NonogramSolver
     vertical = encodedImage[1]
 
     vertical.each_with_index { |x, i|
-      #column = solveVerticalPixel getColumn(image, i), x
       column = decodeRow getColumn(image, i), x
       image = insertColumn image, column, i
     }
 
     horizontal.each_with_index { |y, i|
-      #image[i] = solveHorizontalPixel image[i], y
       image[i] = decodeRow image[i], y
     }
 
