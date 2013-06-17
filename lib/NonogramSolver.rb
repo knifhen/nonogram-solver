@@ -5,11 +5,16 @@ class NonogramSolver
     encodedImage = [[[2],[4],[4],[2]], [[2],[4],[4],[2]]]
     #encodedImage = [[[1,1],[0],[0],[1,1]], [[1,1],[0],[0],[1,1]]]
 
-    image = initImage encodedImage
-    image = decodeImage encodedImage, image
+    image = solve encodedImage
 
     #image = [[0,1,1,0], [1,1,1,1], [1,1,1,1], [0,1,1,0]]
     printImage image
+  end
+
+  def solve encodedImage
+    image = initImage encodedImage
+    image = decodeImage encodedImage, image
+    return image
   end
 
   def clearScreen
