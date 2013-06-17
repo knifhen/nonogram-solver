@@ -70,7 +70,7 @@ describe NonogramSolver do
     row.should eq correctRow
   end
 
-  it "Solves random easy problem" do
+  it "Solves random 5x5 problem" do
     encodedImage = [[[3],[2],[4],[1],[1,2]], [[1,1],[3],[3],[1,1,1],[2]]]
     ns = NonogramSolver.new
     image = ns.solve encodedImage
@@ -78,6 +78,26 @@ describe NonogramSolver do
     image.should haveSize 5, 5
     ns.printImage image
   end
+
+  it "Solves random 5x5 problem 2" do
+    encodedImage = [[[3],[3],[1],[1,1],[3,1]], [[2],[1],[2,2],[2],[3,1]]]
+    ns = NonogramSolver.new
+    image = ns.solve encodedImage
+    image.should notContainEmpties
+    image.should haveSize 5, 5
+    ns.printImage image
+  end
+
+  # 10x10 Nonograms Puzzle ID: 2,115,015 http://www.puzzle-nonograms.com/
+  it "Solves random 10x10 problem 2" do
+    encodedImage = [[[1,1,3],[5],[6],[5],[2,2,3],[1,4,2],[1,1,1,1],[1,1,1],[3],[3,1,1]], [[1,3,2],[1,2],[1,1,1,3],[3,1],[7],[6],[4,2],[5,1],[3],[1,1,1]]]
+    ns = NonogramSolver.new
+    image = ns.solve encodedImage
+    ns.printImage image
+    image.should notContainEmpties
+    image.should haveSize encodedImage[0].length, encodedImage[1].length
+  end
+
 
   RSpec::Matchers.define :haveSize do |width, height|
     match { |image|
