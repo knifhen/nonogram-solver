@@ -1,3 +1,5 @@
+require 'Field'
+
 class NonogramSolver
   def main
     clearScreen
@@ -90,17 +92,49 @@ class NonogramSolver
     return row
   end
 
+  def decodeRow row, encodedRow
+    fields = []
+    minStart = 0
+    encodedRow.each { |fieldLength|
+      field = Field.new
+      field.minStart = minStart
+      field.minEnd = minStart + fieldLength - 1
+      minStart = field.minEnd + 2
+      fields << field
+    }
+
+    maxEnd = row.length - 1
+    encodedRow.reverse.each_with_index { |fieldLength, i|
+      field = fields.reverse[i]
+      field.maxEnd = maxEnd
+      field.maxStart = maxEnd - fieldLength + 1
+      maxEnd = field.maxStart - 2
+    }
+
+    fields.each { |field|
+      if field.maxStart <= field.minEnd
+        (field.maxStart..field.minEnd).each { |i|
+          row[i] = 1
+        }
+      end
+    }
+
+    return row
+  end
+
   def decodeImage encodedImage, image
     horizontal = encodedImage[0]
     vertical = encodedImage[1]
 
     vertical.each_with_index { |x, i|
-      column = solveVerticalPixel getColumn(image, i), x
+      #column = solveVerticalPixel getColumn(image, i), x
+      column = decodeRow getColumn(image, i), x
       image = insertColumn image, column, i
     }
 
     horizontal.each_with_index { |y, i|
-      image[i] = solveHorizontalPixel image[i], y
+      #image[i] = solveHorizontalPixel image[i], y
+      image[i] = decodeRow image[i], y
     }
 
     return image
