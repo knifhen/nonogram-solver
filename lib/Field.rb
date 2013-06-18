@@ -1,6 +1,10 @@
 class Field
   attr_accessor :minStart, :minEnd, :maxStart, :maxEnd, :start, :end, :length
 
+  def isComplete
+    return minStart == maxStart && minEnd == maxEnd
+  end
+
   def maxStartOverlapMinEnd
     return maxStart <= minEnd
   end

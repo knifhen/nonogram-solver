@@ -37,6 +37,15 @@ describe NonogramSolver do
     row.should eq(correctRow)
   end
 
+  it "solves problem where an incomplete field is overlapping a complete field" do
+    correctRow = [1,1,1,0,0,0,0,1,0,1]
+    encodedRow = [3,1,1]
+    row = [1,1,1,0,0,0,0,1,0,-1]
+    ns = NonogramSolver.new
+    row = ns.decodeRow row, encodedRow
+    row.should eq correctRow
+  end
+
   it "Solves the cross image" do
     correctImage = [[0,1,1,0], [1,1,1,1], [1,1,1,1], [0,1,1,0]]
     encodedImage = [[[2],[4],[4],[2]], [[2],[4],[4],[2]]]
@@ -76,7 +85,6 @@ describe NonogramSolver do
     image = ns.solve encodedImage
     image.should notContainEmpties
     image.should haveSize 5, 5
-    ns.printImage image
   end
 
   it "Solves random 5x5 problem 2" do
@@ -85,7 +93,6 @@ describe NonogramSolver do
     image = ns.solve encodedImage
     image.should notContainEmpties
     image.should haveSize 5, 5
-    ns.printImage image
   end
 
   # 10x10 Nonograms Puzzle ID: 2,115,015 http://www.puzzle-nonograms.com/

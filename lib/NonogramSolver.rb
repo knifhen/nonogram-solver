@@ -20,6 +20,86 @@ class NonogramSolver
     return image
   end
 
+  def decodeImage encodedImage, image, depth
+    horizontal = encodedImage[0]
+    vertical = encodedImage[1]
+
+    horizontal.each_with_index { |x, i|
+      column = decodeRow getColumn(image, i), x
+      image = insertColumn image, column, i
+    }
+
+    vertical.each_with_index { |y, i|
+      image[i] = decodeRow image[i], y
+    }
+
+    if (imageDecoded image) || depth > 5
+      return image
+    else
+      return decodeImage encodedImage, image, depth + 1
+    end
+
+  end
+
+  def decodeRow row, encodedRow
+    fields = initMinIndex encodedRow
+    fields = initMaxIndex row, fields, encodedRow
+    fields = updateCompleteFields row, fields
+
+    row = updateRowWithOverlappingFields row, fields
+    row = updateRowWithNotOverlappingFields row, fields
+    row = updateRowWithAllFieldsComplete row, fields
+    row = updateRowWithFieldsInEmpties row, fields
+
+    return row
+  end
+
+  def updateCompleteFields row, fields
+    completeFieldsForward = []
+    completeField = nil
+    row.each_with_index { |value,i|
+      if value == -1
+        break
+      elsif value == 0
+        completeField = nil
+      else
+        if completeField == nil
+          completeField = Field.new
+          completeFieldsForward << completeField
+          completeField.start = i
+        end
+        completeField.end = i
+        completeField.updateLength
+      end
+    }
+
+    fields.each_with_index { |field,i|
+      if completeFieldsForward.length > i
+        completeField = completeFieldsForward[i]
+        if field.length == completeField.length
+          field.minStart = completeField.start
+          field.maxStart = completeField.start
+          field.minEnd = completeField.end
+          field.maxEnd = completeField.end
+        end
+      else
+        break
+      end
+    }
+
+    fields.each_with_index { |field,i|
+      if field.isComplete && fields.length > i + 1 && !fields[i+1].isComplete
+        incompleteField = fields[i+1]
+        if incompleteField.minStart <= field.minStart + 1
+          incompleteField.minStart = field.minStart + 2
+          incompleteField.updateMinEnd
+        end
+      end
+    }
+
+    return fields
+  end
+
   def clearScreen
     puts "\e[H\e[2J"
   end
@@ -69,17 +149,6 @@ class NonogramSolver
   end
 
 
-  def decodeRow row, encodedRow
-    fields = initMinIndex encodedRow
-    fields = initMaxIndex row, fields, encodedRow
-
-    row = updateRowWithOverlappingFields row, fields
-    row = updateRowWithNotOverlappingFields row, fields
-    row = updateRowWithAllFieldsComplete row, fields
-    row = updateRowWithFieldsInEmpties row, fields
-
-    return row
-  end
 
   def updateRowWithAllFieldsComplete row, fields
     row.each_with_index { |value, i|
@@ -125,6 +194,10 @@ class NonogramSolver
     }
 
     fields.each { |field|
+      if field.isComplete
+        next
+      end
+
       emptiesMatching = []
       empties.each { |empty|
         if empty.start >= field.minStart && empty.start <= field.maxEnd && empty.length >= field.length
@@ -217,24 +290,4 @@ class NonogramSolver
     return true
   end
 
-  def decodeImage encodedImage, image, depth
-    horizontal = encodedImage[0]
-    vertical = encodedImage[1]
-
-    horizontal.each_with_index { |x, i|
-      column = decodeRow getColumn(image, i), x
-      image = insertColumn image, column, i
-    }
-
-    vertical.each_with_index { |y, i|
-      image[i] = decodeRow image[i], y
-    }
-
-    if (imageDecoded image) || depth > 5
-      return image
-    else
-      return decodeImage encodedImage, image, depth + 1
-    end
-
-  end
 end
