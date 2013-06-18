@@ -102,6 +102,7 @@ describe NonogramSolver do
     ns.printImage image
     image.should notContainEmpties
     image.should haveSize encodedImage[0].length, encodedImage[1].length
+    image.should beComplete encodedImage
   end
 
 
@@ -120,6 +121,40 @@ describe NonogramSolver do
         row.each { |value|
           value.should_not eq(-1)
         }
+      }
+    }
+  end
+
+  def verifyRow row, encodedRow
+    encodedRow.each { |length|
+      fieldLength = 0
+      row.each_with_index { |value,i|
+        if value == 1
+          fieldLength += 1
+        elsif fieldLength > 0 && fieldLength == length
+          (0..i).each { |index|
+            row[index] = 0
+          }
+          break
+        elsif fieldLength == 0 && value == 0
+          next
+        else
+          fail "FieldLength should be #{length} but was #{fieldLength}"
+        end
+      }
+    }
+  end
+
+  RSpec::Matchers.define :beComplete do |encodedImage|
+    match { |image|
+      ns = NonogramSolver.new
+      encodedImage[0].each_with_index { |encodedRow,i|
+        row = ns.getColumn image, i
+        verifyRow row, encodedRow
+      }
+      encodedImage[1].each_with_index { |encodedRow,i|
+        row = image[i]
+        verifyRow row, encodedRow
       }
     }
   end
