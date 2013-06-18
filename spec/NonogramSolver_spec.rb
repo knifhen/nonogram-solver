@@ -46,22 +46,6 @@ describe NonogramSolver do
     row.should eq correctRow
   end
 
-  it "Solves the cross image" do
-    correctImage = [[0,1,1,0], [1,1,1,1], [1,1,1,1], [0,1,1,0]]
-    encodedImage = [[[2],[4],[4],[2]], [[2],[4],[4],[2]]]
-    ns = NonogramSolver.new
-    image = ns.solve encodedImage
-    image.should eq(correctImage)
-  end
-
-  it "Solves the corners image" do
-    correctImage = [[1,0,0,1], [0,0,0,0], [0,0,0,0], [1,0,0,1]]
-    encodedImage = [[[1,1],[],[],[1,1]],[[1,1],[],[],[1,1]]]
-    ns = NonogramSolver.new
-    image = ns.solve encodedImage
-    image.should eq(correctImage)
-  end
-
   it "decodes row without increasing row length" do
     encodedRow = [1,2]
     row = [-1, -1, -1, 1, -1]
@@ -79,20 +63,44 @@ describe NonogramSolver do
     row.should eq correctRow
   end
 
+  it "Solves the cross image" do
+    correctImage = [[0,1,1,0], [1,1,1,1], [1,1,1,1], [0,1,1,0]]
+    encodedImage = [[[2],[4],[4],[2]], [[2],[4],[4],[2]]]
+    ns = NonogramSolver.new
+    image = ns.solve encodedImage
+    ns.printImage image
+    image.should eq(correctImage)
+    image.should beComplete encodedImage
+  end
+
+  it "Solves the corners image" do
+    correctImage = [[1,0,0,1], [0,0,0,0], [0,0,0,0], [1,0,0,1]]
+    encodedImage = [[[1,1],[],[],[1,1]],[[1,1],[],[],[1,1]]]
+    ns = NonogramSolver.new
+    image = ns.solve encodedImage
+    ns.printImage image
+    image.should eq(correctImage)
+    image.should beComplete encodedImage
+  end
+
   it "Solves random 5x5 problem" do
     encodedImage = [[[3],[2],[4],[1],[1,2]], [[1,1],[3],[3],[1,1,1],[2]]]
     ns = NonogramSolver.new
     image = ns.solve encodedImage
+    ns.printImage image
     image.should notContainEmpties
     image.should haveSize 5, 5
+    image.should beComplete encodedImage
   end
 
   it "Solves random 5x5 problem 2" do
     encodedImage = [[[3],[3],[1],[1,1],[3,1]], [[2],[1],[2,2],[2],[3,1]]]
     ns = NonogramSolver.new
     image = ns.solve encodedImage
+    ns.printImage image
     image.should notContainEmpties
     image.should haveSize 5, 5
+    image.should beComplete encodedImage
   end
 
   it "Solves random 10x10 problem" do
