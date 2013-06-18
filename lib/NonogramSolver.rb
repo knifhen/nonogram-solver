@@ -33,7 +33,7 @@ class NonogramSolver
       image[i] = decodeRow image[i], y
     }
 
-    if (imageDecoded image) || depth > 5
+    if (imageDecoded image) || depth > image[0].length
       return image
     else
       return decodeImage encodedImage, image, depth + 1

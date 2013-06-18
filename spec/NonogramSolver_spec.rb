@@ -95,8 +95,7 @@ describe NonogramSolver do
     image.should haveSize 5, 5
   end
 
-  # 10x10 Nonograms Puzzle ID: 2,115,015 http://www.puzzle-nonograms.com/
-  it "Solves random 10x10 problem 2" do
+  it "Solves random 10x10 problem" do
     encodedImage = [[[1,1,3],[5],[6],[5],[2,2,3],[1,4,2],[1,1,1,1],[1,1,1],[3],[3,1,1]], [[1,3,2],[1,2],[1,1,1,3],[3,1],[7],[6],[4,2],[5,1],[3],[1,1,1]]]
     ns = NonogramSolver.new
     image = ns.solve encodedImage
