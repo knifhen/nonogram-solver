@@ -4,13 +4,11 @@ class NonogramSolver
   def main
     clearScreen
 
-    #encodedImage = [[[2],[4],[4],[2]], [[2],[4],[4],[2]]]
-    #encodedImage = [[[1,1],[0],[0],[1,1]], [[1,1],[0],[0],[1,1]]]
-    encodedImage = [[[3],[2],[4],[1],[1,2]], [[1,1],[3],[3],[1,1,1],[2]]]
+    encodedImage = [[[2,2,4],[6,3],[2,3,1,1],[8,1],[1,2],[2,5],[7],[3,2,1],[3,1],[1,1,1,2,1],[3,6],[1,5],[2,8,1],[2,3,2,2],[6,3,3]],
+                    [[1,3],[1,3],[4,2,1],[5,5],[1,1,1,3],[3,4,3],[4,4,3],[4,8],[1,5],[2,6],[1,9,1],[1,4,1],[2,1,1],[2,1,3],[4,1,1,2]]]
 
     image = solve encodedImage
 
-    #image = [[0,1,1,0], [1,1,1,1], [1,1,1,1], [0,1,1,0]]
     printImage image
   end
 
@@ -21,6 +19,7 @@ class NonogramSolver
   end
 
   def decodeImage encodedImage, image, depth
+    puts "#{depth}"
     horizontal = encodedImage[0]
     vertical = encodedImage[1]
 
@@ -29,9 +28,13 @@ class NonogramSolver
       image = insertColumn image, column, i
     }
 
+    printImage image
+
     vertical.each_with_index { |y, i|
       image[i] = decodeRow image[i], y
     }
+
+    printImage image
 
     if (imageDecoded image) || depth > image[0].length
       return image
@@ -44,6 +47,7 @@ class NonogramSolver
   def decodeRow row, encodedRow
     fields = initMinIndex encodedRow
     fields = initMaxIndex row, fields, encodedRow
+    fields = updateFieldsSpanningNoZone row, fields
     fields = updateCompleteFields row, fields
 
     row = updateRowWithOverlappingFields row, fields
@@ -52,6 +56,32 @@ class NonogramSolver
     row = updateRowWithFieldsInEmpties row, fields
 
     return row
+  end
+
+  def updateFieldsSpanningNoZone row, fields
+    fields.each { |field|
+      (field.minStart..field.maxEnd).each { |i|
+        if row[i] == 0
+          if i - field.minStart < field.length
+            field.minStart = i + 1
+            field.updateMinEnd
+            break
+          end
+        end
+      }
+      (field.minStart..field.maxEnd).each { |i|
+        if row[i] == 0
+          if field.maxEnd - i < field.length
+            field.maxEnd = i - 1
+            field.updateMaxStart
+            break
+          end
+        end
+      }
+    }
+
+
+    return fields
   end
 
   def updateCompleteFields row, fields
@@ -200,6 +230,7 @@ class NonogramSolver
 
       emptiesMatching = []
       empties.each { |empty|
+        # bug in here, matching empty can start before field and end after field
         if empty.start >= field.minStart && empty.start <= field.maxEnd && empty.length >= field.length
           emptiesMatching << empty
         end
