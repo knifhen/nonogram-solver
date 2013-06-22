@@ -79,7 +79,7 @@ describe NonogramSolver do
     encodedImage = [[[2],[4],[4],[2]], [[2],[4],[4],[2]]]
     ns = NonogramSolver.new
     image = ns.solve encodedImage
-    ns.printImage image
+    ns.printImageAndEncoding image, encodedImage
     image.should eq(correctImage)
     image.should beComplete encodedImage
   end
@@ -89,7 +89,7 @@ describe NonogramSolver do
     encodedImage = [[[1,1],[],[],[1,1]],[[1,1],[],[],[1,1]]]
     ns = NonogramSolver.new
     image = ns.solve encodedImage
-    ns.printImage image
+    ns.printImageAndEncoding image, encodedImage
     image.should eq(correctImage)
     image.should beComplete encodedImage
   end
@@ -98,7 +98,7 @@ describe NonogramSolver do
     encodedImage = [[[3],[2],[4],[1],[1,2]], [[1,1],[3],[3],[1,1,1],[2]]]
     ns = NonogramSolver.new
     image = ns.solve encodedImage
-    ns.printImage image
+    ns.printImageAndEncoding image, encodedImage
     image.should notContainEmpties
     image.should haveSize 5, 5
     image.should beComplete encodedImage
@@ -108,7 +108,7 @@ describe NonogramSolver do
     encodedImage = [[[3],[3],[1],[1,1],[3,1]], [[2],[1],[2,2],[2],[3,1]]]
     ns = NonogramSolver.new
     image = ns.solve encodedImage
-    ns.printImage image
+    ns.printImageAndEncoding image, encodedImage
     image.should notContainEmpties
     image.should haveSize 5, 5
     image.should beComplete encodedImage
@@ -118,7 +118,7 @@ describe NonogramSolver do
     encodedImage = [[[1,1,3],[5],[6],[5],[2,2,3],[1,4,2],[1,1,1,1],[1,1,1],[3],[3,1,1]], [[1,3,2],[1,2],[1,1,1,3],[3,1],[7],[6],[4,2],[5,1],[3],[1,1,1]]]
     ns = NonogramSolver.new
     image = ns.solve encodedImage
-    ns.printImage image
+    ns.printImageAndEncoding image, encodedImage
     image.should notContainEmpties
     image.should haveSize encodedImage[0].length, encodedImage[1].length
     image.should beComplete encodedImage
