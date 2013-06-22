@@ -1,6 +1,17 @@
 require 'NonogramSolver'
 
+# http://www.puzzle-nonograms.com/ for examples
+
 describe NonogramSolver do
+  it "temporary" do
+    correctRow = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1]
+    encodedRow = [1,4,1]
+    row = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1]
+    ns = NonogramSolver.new
+    ns.decodeRow row, encodedRow
+    row.should eq(correctRow)
+  end
+
   it "Solves row A" do
     correctRow = [1,1,1,1]
     encodedRow = [4]
@@ -118,7 +129,7 @@ describe NonogramSolver do
                     [[1,3],[1,3],[4,2,1],[5,5],[1,1,1,3],[3,4,3],[4,4,3],[4,8],[1,5],[2,6],[1,9,1],[1,4,1],[2,1,1],[2,1,3],[4,1,1,2]]]
     ns = NonogramSolver.new
     image = ns.solve encodedImage
-    ns.printImage image
+    ns.printImageAndEncoding image, encodedImage
     image.should notContainEmpties
     image.should haveSize encodedImage[0].length, encodedImage[1].length
     image.should beComplete encodedImage

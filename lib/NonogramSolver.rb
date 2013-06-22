@@ -19,7 +19,6 @@ class NonogramSolver
   end
 
   def decodeImage encodedImage, image, depth
-    puts "#{depth}"
     horizontal = encodedImage[0]
     vertical = encodedImage[1]
 
@@ -28,13 +27,9 @@ class NonogramSolver
       image = insertColumn image, column, i
     }
 
-    printImage image
-
     vertical.each_with_index { |y, i|
       image[i] = decodeRow image[i], y
     }
-
-    printImage image
 
     if (imageDecoded image) || depth > image[0].length
       return image
@@ -47,41 +42,14 @@ class NonogramSolver
   def decodeRow row, encodedRow
     fields = initMinIndex encodedRow
     fields = initMaxIndex row, fields, encodedRow
-    fields = updateFieldsSpanningNoZone row, fields
     fields = updateCompleteFields row, fields
 
     row = updateRowWithOverlappingFields row, fields
     row = updateRowWithNotOverlappingFields row, fields
-    row = updateRowWithAllFieldsComplete row, fields
     row = updateRowWithFieldsInEmpties row, fields
+    row = updateRowWithAllFieldsComplete row, fields
 
     return row
-  end
-
-  def updateFieldsSpanningNoZone row, fields
-    fields.each { |field|
-      (field.minStart..field.maxEnd).each { |i|
-        if row[i] == 0
-          if i - field.minStart < field.length
-            field.minStart = i + 1
-            field.updateMinEnd
-            break
-          end
-        end
-      }
-      (field.minStart..field.maxEnd).each { |i|
-        if row[i] == 0
-          if field.maxEnd - i < field.length
-            field.maxEnd = i - 1
-            field.updateMaxStart
-            break
-          end
-        end
-      }
-    }
-
-
-    return fields
   end
 
   def updateCompleteFields row, fields
@@ -147,6 +115,57 @@ class NonogramSolver
       puts ""
     }
     puts ""
+  end
+
+  def printImageAndEncoding image, encodedImage
+    mostValuesInCol = 0
+    encodedImage[0].each { |encodedCol|
+      mostValuesInCol = [mostValuesInCol, encodedCol.length].max
+    }
+    mostValuesInRow = 0
+    encodedImage[1].each { |encodedRow|
+      mostValuesInRow = [mostValuesInRow, encodedRow.length].max
+    }
+
+    puts ""
+
+    mostValuesInCol.downto(1) { |i|
+      (0..mostValuesInRow).each {
+        print " "
+      }
+      encodedImage[0].each { |encodedCol|
+        if encodedCol.length >= i
+          print encodedCol[encodedCol.length - i]
+        else
+          print " "
+        end
+      }
+      puts ""
+    }
+
+    puts ""
+
+    encodedImage[1].each_with_index { |encodedRow,i|
+      (1..mostValuesInRow - encodedRow.length).each {
+        print " "
+      }
+      encodedRow.each { |value|
+        print value
+      }
+
+      print " "
+
+      image[i].each { |pixel|
+        if pixel == -1
+          print 'x'
+        else
+          print pixel
+        end
+      }
+
+      puts ""
+    }
+
   end
 
   def initImage encodedImage
@@ -231,7 +250,7 @@ class NonogramSolver
       emptiesMatching = []
       empties.each { |empty|
         # bug in here, matching empty can start before field and end after field
-        if empty.start >= field.minStart && empty.start <= field.maxEnd && empty.length >= field.length
+        if empty.start <= field.maxEnd && empty.end >= field.minStart && empty.length >= field.length
           emptiesMatching << empty
         end
       }
