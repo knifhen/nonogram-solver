@@ -146,8 +146,10 @@ class NonogramSolver
       row.each { |pixel|
         if pixel == -1
           print 'x'
+        elsif pixel == 0
+          print '.'
         else
-          print pixel
+          print '#'
         end
       }
       puts ""
@@ -196,8 +198,10 @@ class NonogramSolver
       image[i].each { |pixel|
         if pixel == -1
           print 'x'
+        elsif pixel == 0
+          print '.'
         else
-          print pixel
+          print '#'
         end
       }
 
