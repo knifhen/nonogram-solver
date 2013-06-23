@@ -47,7 +47,7 @@ class NonogramSolver
 
     row = updateRowWithOverlappingFields row, fields
     row = updateRowWithNotOverlappingFields row, fields
-    row = updateRowWithFieldsInEmpties row, fields
+    row = updateRowWithFieldsInFreeSpace row, fields
     row = updateRowWithAllFieldsComplete row, fields
 
     return row
@@ -244,20 +244,20 @@ class NonogramSolver
     return updateRowWithNotOverlappingFields row, fields
   end
 
-  def updateRowWithFieldsInEmpties row, fields
-    empties = []
-    empty = nil
+  def updateRowWithFieldsInFreeSpace row, fields
+    freeSpaces = []
+    freeSpace = nil
     row.each_with_index { |value, i|
       if value != 0
-        if empty == nil
-          empty = Field.new
-          empties << empty
-          empty.start = i
+        if freeSpace == nil
+          freeSpace = Field.new
+          freeSpaces << freeSpace
+          freeSpace.start = i
         end
-        empty.end = i
-        empty.updateLength
+        freeSpace.end = i
+        freeSpace.updateLength
       else
-        empty = nil
+        freeSpace = nil
       end
     }
 
@@ -266,23 +266,22 @@ class NonogramSolver
         next
       end
 
-      emptiesMatching = []
-      empties.each { |empty|
-        # bug in here, matching empty can start before field and end after field
-        if empty.start <= field.maxEnd && empty.end >= field.minStart && empty.length >= field.length
-          emptiesMatching << empty
+      freeSpacesMatching = []
+      freeSpaces.each { |freeSpace|
+        if freeSpace.start <= field.maxEnd && freeSpace.end >= field.minStart && freeSpace.length >= field.length
+          freeSpacesMatching << freeSpace
         end
       }
 
-      if emptiesMatching.length > 0
-        firstEmpty = emptiesMatching[0]
-        lastEmpty = emptiesMatching[emptiesMatching.length - 1]
-        if firstEmpty.start >= field.minStart && firstEmpty.start <= field.maxStart
-          field.minStart = firstEmpty.start
+      if freeSpacesMatching.length > 0
+        firstFreeSpace = freeSpacesMatching[0]
+        lastFreeSpace = freeSpacesMatching[freeSpacesMatching.length - 1]
+        if firstFreeSpace.start >= field.minStart && firstFreeSpace.start <= field.maxStart
+          field.minStart = firstFreeSpace.start
           field.updateMinEnd
         end
-        if lastEmpty.end <= field.maxEnd && lastEmpty.end >= field.minEnd
-          field.maxEnd = lastEmpty.end
+        if lastFreeSpace.end <= field.maxEnd && lastFreeSpace.end >= field.minEnd
+          field.maxEnd = lastFreeSpace.end
           field.updateMaxStart
         end
       end
