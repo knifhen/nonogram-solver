@@ -140,6 +140,18 @@ class NonogramSolver
     puts "\e[H\e[2J"
   end
 
+  def countSolvedPixels image
+    solvedPixels = 0
+    image.each { |row|
+      row.each { |value|
+        if value >= 0
+          solvedPixels += 1
+        end
+      }
+    }
+    return solvedPixels
+  end
+
   def printImage image
     puts ""
     image.each { |row|
