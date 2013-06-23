@@ -117,9 +117,14 @@ class NonogramSolver
 
     fields.each_with_index { |field, i|
       if field.isComplete && !fieldIsLast(fields, i) && !fields[i+1].isComplete
-        incompleteField = fields[i+1]
-        if incompleteField.minStart < field.maxEnd + 2
-          incompleteField.setMinStart field.maxEnd + 2
+        nextField = fields[i+1]
+        if nextField.minStart < field.maxEnd + 2
+          nextField.setMinStart field.maxEnd + 2
+        end
+      elsif !fieldIsLast(fields, i) && !fields[i+1].isComplete
+        nextField = fields[i+1]
+        if nextField.minStart < field.minEnd + 2
+          nextField.setMinStart field.minEnd + 2
         end
       end
     }

@@ -75,5 +75,14 @@ describe NonogramSolver do
     decodedRow.should eq correctRow.reverse
   end
 
+  it "solves problem where field should not be overlapping minEnd of field before " do
+    correctRow = [0,0,0,0,0,1,1,1,0,0,1,1,0,0,1]
+    encodedRow = [3,2,1]
+    row = [0,0,0,0,0,1,1,1,0,-1,1,1,0,0,-1]
+    ns = NonogramSolver.new
+    decodedRow = ns.decodeRow row, encodedRow
+    decodedRow.should eq correctRow
+  end
+
 
 end
