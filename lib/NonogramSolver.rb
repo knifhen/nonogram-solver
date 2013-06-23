@@ -19,25 +19,34 @@ class NonogramSolver
   end
 
   def decodeImage encodedImage, image, depth
-    horizontal = encodedImage[0]
-    vertical = encodedImage[1]
+    encodedColumns = encodedImage[0]
+    encodedRows = encodedImage[1]
 
-    horizontal.each_with_index { |x, i|
-      column = decodeRow getColumn(image, i), x
-      image = insertColumn image, column, i
-    }
-
-    vertical.each_with_index { |y, i|
-      image[i] = decodeRow image[i], y
-    }
+    image = decodeColumns image, encodedColumns
+    image = decodeRows image, encodedRows
 
     if (imageDecoded image) || depth > image[0].length
       return image
     else
       return decodeImage encodedImage, image, depth + 1
     end
-
   end
+
+  def decodeColumns image, encodedColumns
+    encodedColumns.each_with_index { |x, i|
+      column = decodeRow getColumn(image, i), x
+      image = insertColumn image, column, i
+    }
+    return image
+  end
+
+  def decodeRows image, encodedRows
+    encodedRows.each_with_index { |y, i|
+      image[i] = decodeRow image[i], y
+    }
+    return image
+  end
+
 
   def decodeRow row, encodedRow
     fields = initMinIndex encodedRow
