@@ -63,5 +63,17 @@ describe NonogramSolver do
     row.should eq correctRow
   end
 
+  it "solves field with freeSpace in middle" do
+    correctRow = [0,1,1,1,0,-1,-1,1,1,-1,-1,0,1,1,1]
+    encodedRow = [3,4,3]
+    row = [0,1,-1,1,-1,-1,-1,1,-1,-1,-1,0,1,-1,1]
+    ns = NonogramSolver.new
+    decodedRow = ns.decodeRow row, encodedRow
+    decodedRow.should eq correctRow
+
+    decodedRow = ns.decodeRow row.reverse, encodedRow.reverse
+    decodedRow.should eq correctRow.reverse
+  end
+
 
 end

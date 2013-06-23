@@ -51,8 +51,8 @@ class NonogramSolver
   def decodeRow row, encodedRow
     fields = initMinIndex encodedRow
     fields = initMaxIndex row, fields, encodedRow
-    fields = updateCompleteFields row, fields
     fields = updateFieldsWithPartOfFieldSet row, fields
+    fields = updateCompleteFields row, fields
 
     row = updateRowWithOverlappingFields row, fields
     row = updateRowWithNotOverlappingFields row, fields
@@ -70,6 +70,10 @@ class NonogramSolver
             field.setMinStart i + 1
           elsif !field.canExistAfter i, row
             field.setMaxEnd i - 1
+          end
+        elsif row[i] == 1
+          if field.isOnlyMatchingField fields, i
+            field.updateSpanWithIndex i
           end
         end
       }
@@ -111,16 +115,20 @@ class NonogramSolver
       end
     }
 
-    fields.each_with_index { |field,i|
-      if field.isComplete && fields.length > i + 1 && !fields[i+1].isComplete
+    fields.each_with_index { |field, i|
+      if field.isComplete && !fieldIsLast(fields, i) && !fields[i+1].isComplete
         incompleteField = fields[i+1]
-        if incompleteField.minStart <= field.minStart + 1
-          incompleteField.setMinStart field.minStart + 2
+        if incompleteField.minStart < field.maxEnd + 2
+          incompleteField.setMinStart field.maxEnd + 2
         end
       end
     }
 
     return fields
+  end
+
+  def fieldIsLast fields, i
+    return fields.length == i + 1
   end
 
   def clearScreen
