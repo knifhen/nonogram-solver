@@ -28,7 +28,7 @@ describe NonogramSolver do
     ns = NonogramSolver.new
     image = ns.solve encodedImage
     ns.printImageAndEncoding image, encodedImage
-    image.should notContainEmpties
+    image.should notContainFreeSpace
     image.should haveSize 5, 5
     image.should beComplete encodedImage
   end
@@ -38,7 +38,7 @@ describe NonogramSolver do
     ns = NonogramSolver.new
     image = ns.solve encodedImage
     ns.printImageAndEncoding image, encodedImage
-    image.should notContainEmpties
+    image.should notContainFreeSpace
     image.should haveSize 5, 5
     image.should beComplete encodedImage
   end
@@ -48,7 +48,7 @@ describe NonogramSolver do
     ns = NonogramSolver.new
     image = ns.solve encodedImage
     ns.printImageAndEncoding image, encodedImage
-    image.should notContainEmpties
+    image.should notContainFreeSpace
     image.should haveSize encodedImage[0].length, encodedImage[1].length
     image.should beComplete encodedImage
   end
@@ -59,7 +59,7 @@ describe NonogramSolver do
     ns = NonogramSolver.new
     image = ns.solve encodedImage
     ns.printImageAndEncoding image, encodedImage
-    image.should notContainEmpties
+    image.should notContainFreeSpace
     image.should haveSize encodedImage[0].length, encodedImage[1].length
     image.should beComplete encodedImage
   end
@@ -73,7 +73,7 @@ describe NonogramSolver do
     }
   end
 
-  RSpec::Matchers.define :notContainEmpties do
+  RSpec::Matchers.define :notContainFreeSpace do
     match { |image|
       image.each { |row|
         row.each { |value|

@@ -54,7 +54,7 @@ describe NonogramSolver do
     row.length.should eq 5
   end
 
-  it "solves row with only one empty matching field" do
+  it "solves row with only one freeSpace matching field" do
     correctRow = [0,0,0,1,1]
     encodedRow = [2]
     row = [-1,0,0,-1,-1]
