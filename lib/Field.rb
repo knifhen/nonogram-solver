@@ -47,6 +47,26 @@ class Field
     return maxFree >= length
   end
 
+  def setMinStart i
+    @minStart = i
+    updateMinEnd
+  end
+
+  def setMinEnd i
+    @minEnd = i
+    updateMinStart
+  end
+
+  def setMaxStart i
+    @maxStart = i
+    updateMaxEnd
+  end
+
+  def setMaxEnd i
+    @maxEnd = i
+    updateMaxStart
+  end
+
   def updateMinStart
     @minStart = minEnd - length + 1
   end

@@ -67,11 +67,9 @@ class NonogramSolver
       (field.minStart..field.maxEnd).each { |i|
         if row[i] == 0
           if !field.canExistBefore i, row
-            field.minStart = i + 1
-            field.updateMinEnd
+            field.setMinStart i + 1
           elsif !field.canExistAfter i, row
-            field.maxEnd = i - 1
-            field.updateMaxStart
+            field.setMaxEnd i - 1
           end
         end
       }
@@ -117,8 +115,7 @@ class NonogramSolver
       if field.isComplete && fields.length > i + 1 && !fields[i+1].isComplete
         incompleteField = fields[i+1]
         if incompleteField.minStart <= field.minStart + 1
-          incompleteField.minStart = field.minStart + 2
-          incompleteField.updateMinEnd
+          incompleteField.setMinStart field.minStart + 2
         end
       end
     }
@@ -240,12 +237,10 @@ class NonogramSolver
         if matchingFields.length == 1
           field = matchingFields[0]
           if field.minEnd < i
-            field.minEnd = i
-            field.updateMinStart
+            field.setMinEnd i
           end
           if field.maxStart > i
-            field.maxStart = i
-            field.updateMaxEnd
+            field.setMaxStart i
           end
         end
       end
@@ -286,12 +281,10 @@ class NonogramSolver
         firstFreeSpace = freeSpacesMatching[0]
         lastFreeSpace = freeSpacesMatching[freeSpacesMatching.length - 1]
         if firstFreeSpace.start >= field.minStart && firstFreeSpace.start <= field.maxStart
-          field.minStart = firstFreeSpace.start
-          field.updateMinEnd
+          field.setMinStart firstFreeSpace.start
         end
         if lastFreeSpace.end <= field.maxEnd && lastFreeSpace.end >= field.minEnd
-          field.maxEnd = lastFreeSpace.end
-          field.updateMaxStart
+          field.setMaxEnd lastFreeSpace.end
         end
       end
     }
@@ -326,8 +319,7 @@ class NonogramSolver
     encodedRow.each { |fieldLength|
       field = Field.new
       field.length = fieldLength
-      field.minStart = minStart
-      field.updateMinEnd
+      field.setMinStart minStart
       minStart = field.minEnd + 2
       fields << field
     }
@@ -338,8 +330,7 @@ class NonogramSolver
     maxEnd = row.length - 1
     encodedRow.reverse.each_with_index { |fieldLength, i|
       field = fields.reverse[i]
-      field.maxEnd = maxEnd
-      field.updateMaxStart
+      field.setMaxEnd maxEnd
       maxEnd = field.maxStart - 2
     }
     return fields
