@@ -43,6 +43,7 @@ class NonogramSolver
     fields = initMinIndex encodedRow
     fields = initMaxIndex row, fields, encodedRow
     fields = updateCompleteFields row, fields
+    fields = updateFieldsWithPartOfFieldSet row, fields
 
     row = updateRowWithOverlappingFields row, fields
     row = updateRowWithNotOverlappingFields row, fields
@@ -50,6 +51,24 @@ class NonogramSolver
     row = updateRowWithAllFieldsComplete row, fields
 
     return row
+  end
+
+  def updateFieldsWithPartOfFieldSet row, fields
+    fields.each { |field|
+      (field.minStart..field.maxEnd).each { |i|
+        if row[i] == 0
+          if !field.canExistBefore i, row
+            field.minStart = i + 1
+            field.updateMinEnd
+          elsif !field.canExistAfter i, row
+            field.maxEnd = i - 1
+            field.updateMaxStart
+          end
+        end
+      }
+    }
+
+    return fields
   end
 
   def updateCompleteFields row, fields
