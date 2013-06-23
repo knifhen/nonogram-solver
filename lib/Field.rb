@@ -9,6 +9,44 @@ class Field
     return maxStart <= minEnd
   end
 
+  def canExistBefore index, row
+    maxFree = 0
+    free = 0
+    if index < minEnd
+      return false
+    end
+    (minStart..index).each { |i|
+      value = row[i]
+      if value != 0
+        free += 1
+      else
+        maxFree = [maxFree, free].max
+        free = 0
+      end
+    }
+    maxFree = [maxFree, free].max
+    return maxFree >= length
+  end
+
+  def canExistAfter index, row
+    if index > maxStart
+      return false
+    end
+    maxFree = 0
+    free = 0
+    (index..maxEnd).each { |i|
+      value = row[i]
+      if value != 0
+        free += 1
+      else
+        maxFree = [maxFree, free].max
+        free = 0
+      end
+    }
+    maxFree = [maxFree, free].max
+    return maxFree >= length
+  end
+
   def updateMinStart
     @minStart = minEnd - length + 1
   end
