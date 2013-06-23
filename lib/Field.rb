@@ -47,6 +47,25 @@ class Field
     return maxFree >= length
   end
 
+  def spansIndex i
+    return i >= @minStart && i <= @maxEnd
+  end
+
+  def isOnlyMatchingField fields, i
+    if !spansIndex i
+      return false
+    end
+
+    matches = 0
+    fields.each { |field|
+      if field.spansIndex i
+        matches += 1
+      end
+    }
+
+    return matches == 1
+  end
+
   def setMinStart i
     @minStart = i
     updateMinEnd
@@ -65,6 +84,15 @@ class Field
   def setMaxEnd i
     @maxEnd = i
     updateMaxStart
+  end
+
+  def updateSpanWithIndex i
+    if @minEnd < i
+      setMinEnd i
+    end
+    if @maxStart > i
+      setMaxStart i
+    end
   end
 
   def updateMinStart
